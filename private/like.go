@@ -29,7 +29,6 @@ func (t PrivateAPI) LikeThread(id string) (map[string]interface{}, error) {
 	}
 
 	var likingInfo map[string]interface{}
-	fmt.Println(string(respBody))
 	err = json.Unmarshal(respBody, &likingInfo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
@@ -60,7 +59,6 @@ func (t PrivateAPI) UnLikeThread(id string) (map[string]interface{}, error) {
 	}
 
 	var likingInfo map[string]interface{}
-	fmt.Println(string(respBody))
 	err = json.Unmarshal(respBody, &likingInfo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal response: %v", err)

@@ -4,13 +4,18 @@ import (
 	"net/http"
 )
 
+// Private impl
 type PrivateAPI struct {
-	UserID          int
-	Username        string
-	Password        string
-	TimezoneOffset  int
-	AndroidDeviceID string
-	APIToken        string
+	UserID             int
+	Username           string
+	Password           string
+	TimezoneOffset     int
+	DeviceID           string
+	APIToken           string
+	DeviceManufacturer string
+	DeviceModel        string
+	DeviceOsVersion    int
+	DeviceOsRelease    string
 }
 
 func generateAuthHeader(token string) map[string]string {

@@ -2,8 +2,8 @@ package threads
 
 import (
 	"fmt"
+	"io"
 	"net/http"
-	"net/http/httputil"
 	"regexp"
 	"strconv"
 
@@ -11,8 +11,8 @@ import (
 	"github.com/dwarvesf/go-threads/private"
 )
 
+// PrivateAPI interface for private API
 type PrivateAPI interface {
-	Auth() (*model.AuthResponse, error)
 	CreatePost(content model.CreatePostRequest) (*model.CreatePostResponse, error)
 	GetUserFollowers(id int) (*model.UserFollowersResponse, error)
 	GetFollowers() (*model.UserFollowersResponse, error)
@@ -25,27 +25,49 @@ type PrivateAPI interface {
 	UnFollowUser(id int) (*model.FollowUserResponse, error)
 }
 
-func NewPrivateAPIClient(uID int, username string, password string, androidDeviceID, token string) (PrivateAPI, error) {
-	if uID == 0 {
-		userID, err := GetUserByUsername(username)
-		if err != nil {
-			return nil, err
-		}
-
-		uID = userID
+// NewPrivateAPIClient new api client for private API
+func NewPrivateAPIClient(cfg *Config) (PrivateAPI, error) {
+	if err := cfg.ReadyCheck(); err != nil {
+		return nil, err
 	}
 
 	ins := &private.PrivateAPI{
-		UserID:          uID,
-		Username:        username,
-		Password:        password,
-		TimezoneOffset:  -14400,
-		AndroidDeviceID: androidDeviceID,
-		APIToken:        token,
+		UserID:             cfg.UserID,
+		Username:           cfg.Username,
+		Password:           cfg.Password,
+		TimezoneOffset:     cfg.TimezoneOffset,
+		DeviceID:           cfg.DeviceID,
+		DeviceManufacturer: cfg.DeviceManufacturer,
+		DeviceModel:        cfg.DeviceModel,
+		DeviceOsVersion:    cfg.DeviceOsVersion,
+		DeviceOsRelease:    cfg.DeviceOsRelease,
+		APIToken:           cfg.APIToken,
 	}
 
-	if token == "" {
-		ins.Auth()
+	return ins, nil
+}
+
+// InitAPIClient new api client for private API
+func InitAPIClient(cfgFn ...ConfigFn) (PrivateAPI, error) {
+	cfg, err := InitConfig(cfgFn...)
+	if err != nil {
+		return nil, err
+	}
+	if err := cfg.ReadyCheck(); err != nil {
+		return nil, err
+	}
+
+	ins := &private.PrivateAPI{
+		UserID:             cfg.UserID,
+		Username:           cfg.Username,
+		Password:           cfg.Password,
+		TimezoneOffset:     cfg.TimezoneOffset,
+		DeviceID:           cfg.DeviceID,
+		DeviceManufacturer: cfg.DeviceManufacturer,
+		DeviceModel:        cfg.DeviceModel,
+		DeviceOsVersion:    cfg.DeviceOsVersion,
+		DeviceOsRelease:    cfg.DeviceOsRelease,
+		APIToken:           cfg.APIToken,
 	}
 
 	return ins, nil
@@ -67,7 +89,7 @@ var fetchHTMLHeaders = map[string]string{
 	"Upgrade-Insecure-Requests": "1",
 }
 
-// GetUserByUsername get user by username
+// GetUserByUsername get user by username via instagram api
 func GetUserByUsername(username string) (int, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://www.instagram.com/%s", username), nil)
@@ -85,7 +107,7 @@ func GetUserByUsername(username string) (int, error) {
 	}
 	defer resp.Body.Close()
 
-	respBody, err := httputil.DumpResponse(resp, true)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return 0, fmt.Errorf("failed to read response body: %v", err)
 	}

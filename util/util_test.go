@@ -1,8 +1,7 @@
-package thread
+package util
 
 import (
 	"encoding/hex"
-	"fmt"
 	"strings"
 	"testing"
 )
@@ -17,8 +16,7 @@ func TestGenerateAndroidDeviceID(t *testing.T) {
 
 	t.Run("Generated device ID has length 24", func(t *testing.T) {
 		deviceID := GenerateAndroidDeviceID()
-		fmt.Println(deviceID)
-		fmt.Println(len(deviceID))
+
 		if len(deviceID) != 24 {
 			t.Errorf("Expected device ID length to be 24, got %d", len(deviceID))
 		}

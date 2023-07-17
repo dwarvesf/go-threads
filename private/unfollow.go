@@ -31,7 +31,6 @@ func (t PrivateAPI) UnFollowUser(id int) (*model.FollowUserResponse, error) {
 	}
 
 	var result model.FollowUserResponse
-	fmt.Println(string(body))
 	err = json.Unmarshal(body, &result)
 	if err != nil {
 		return nil, err

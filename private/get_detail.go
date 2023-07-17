@@ -30,8 +30,6 @@ func (t PrivateAPI) GetThreadByID(ID string) (*model.ThreadDetailResponse, error
 		return nil, fmt.Errorf("failed to read response body: %v", err)
 	}
 
-	fmt.Println(string(respBody))
-
 	var thread model.ThreadDetailResponse
 	err = json.Unmarshal(respBody, &thread)
 	if err != nil {

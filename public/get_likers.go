@@ -37,8 +37,6 @@ func (s PublicAPI) GetThreadLikers(ID int) (*model.LikersResponse, error) {
 		return nil, err
 	}
 
-	fmt.Println(string(body))
-
 	var result model.LikersResponse
 	err = json.Unmarshal(body, &result)
 	if err != nil {

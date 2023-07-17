@@ -15,7 +15,8 @@ import (
 var instance PublicAPI
 var once sync.Once
 
-func getPublicAPIClient() PublicAPI {
+// NewThreads return the public api
+func NewThreads() PublicAPI {
 	once.Do(func() {
 		c, err := newPublicAPIClient()
 		if err != nil {
@@ -76,5 +77,5 @@ func getThreadsAPIToken() (string, error) {
 }
 
 func GetThreadLikers(ID int) (*model.LikersResponse, error) {
-	return getPublicAPIClient().GetThreadLikers(ID)
+	return NewThreads().GetThreadLikers(ID)
 }
